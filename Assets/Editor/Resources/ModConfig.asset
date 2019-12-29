@@ -14,7 +14,14 @@ MonoBehaviour:
   id: 64
   title: 64
   author: KingBranBran
-  description: Submit a base64 number in binary!
-  version: 0.9
+  description: 'Submit a base64 number in binary!
+
+
+    HTML: coming soon!
+
+    PDF: https://puu.sh/EUjZj.pdf (temp)
+
+'
+  version: 1
   outputFolder: C:\Users\kingb\Documents\KTANE\Modding\Projects\AssetBundles
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 91949ec1d97222f41824b8988af730fe, type: 3}
