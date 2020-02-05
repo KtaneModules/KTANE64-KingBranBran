@@ -43,35 +43,23 @@ public class SixtyFourScript : MonoBehaviour {
         buttons[0].OnInteractEnded += delegate { ButtonReleased(0); };
         buttons[1].OnInteractEnded += delegate { ButtonReleased(1); };
 
-        screenText.gameObject.SetActive(false);
-
         if (Colorblind.ColorblindModeActive)
         {
             DebugLog("Colorblind mode: True");
-        }
-        else
-        {
-            DebugLog("Colorblind mode: False");
-        }
-
-        module.OnActivate = OnActivate;
-    }
-
-	void Start()
-	{
-        GenerateNumber();
-    }
-
-    void OnActivate()
-    {
-        screenText.gameObject.SetActive(true);
-        if (Colorblind.ColorblindModeActive)
-        {
             for(int i = 0; i < 2; i++)
             {
                 colorblindTexts[i].SetActive(true);
             }
         }
+        else
+        {
+            DebugLog("Colorblind mode: False");
+        }
+    }
+
+	void Start()
+	{
+        GenerateNumber();
     }
 
     void ButtonPressed(int buttonNum)
