@@ -9,11 +9,14 @@ public class SixtyFourScript : MonoBehaviour {
 
     public KMSelectable[] buttons;
     public KMBombModule module;
+    public KMColorblindMode Colorblind;
     public KMAudio moduleAudio;
+    public AudioSource submitSoundSource;
 
     public GameObject display;
     public GameObject screenTextGameObject;
     public TextMesh screenText;
+    public GameObject[] colorblindTexts;
     
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -39,13 +42,25 @@ public class SixtyFourScript : MonoBehaviour {
 
         buttons[0].OnInteractEnded += delegate { ButtonReleased(0); };
         buttons[1].OnInteractEnded += delegate { ButtonReleased(1); };
+
+        if (Colorblind.ColorblindModeActive)
+        {
+            DebugLog("Colorblind mode: True");
+            for(int i = 0; i < 2; i++)
+            {
+                colorblindTexts[i].SetActive(true);
+            }
+        }
+        else
+        {
+            DebugLog("Colorblind mode: False");
+        }
     }
 
 	void Start()
 	{
         GenerateNumber();
     }
-
 
     void ButtonPressed(int buttonNum)
     {
@@ -163,11 +178,13 @@ public class SixtyFourScript : MonoBehaviour {
     {
         submitting = true;
 
-        var submitAudio = moduleAudio.PlaySoundAtTransformWithRef("Submit", module.transform);
+        //var submitAudio = moduleAudio.PlaySoundAtTransformWithRef("Submit", module.transform);
+        submitSoundSource.Play();
         StartCoroutine(TextGlitch());
         StartCoroutine(CycleNumbers());
         yield return new WaitForSeconds(5f);
-        submitAudio.StopSound();
+        //submitAudio.StopSound();
+        submitSoundSource.Stop();
         submitting = false;
 
         SubmitAnswer();      
@@ -347,7 +364,6 @@ public class SixtyFourScript : MonoBehaviour {
             for (int i = 0; i < parts.Length; i++)
             {
                 
-
                 var part = parts[i];
 
                 if (part == "reset" || part == "r")
@@ -369,7 +385,6 @@ public class SixtyFourScript : MonoBehaviour {
                 {
                     for (int ix = 0; ix < part.Length; ix++)
                     {
-                        yield return "trycancel";
                         if (part[ix] == '1')
                         {
                             ButtonPressed(1);
@@ -384,6 +399,46 @@ public class SixtyFourScript : MonoBehaviour {
                     }
                 }
             }
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        if(!currentInput.Equals(""))
+        {
+            buttons[0].OnInteract();
+            while (!screenText.text.Equals(""))
+            {
+                yield return true;
+                yield return new WaitForSeconds(0.01f);
+            }
+            buttons[0].OnInteractEnded();
+        }
+        for(int i = 0; i < numberInBinary.Length; i++)
+        {
+            if (numberInBinary.ElementAt(i).Equals('0'))
+            {
+                buttons[0].OnInteract();
+                buttons[0].OnInteractEnded();
+            }
+            else
+            {
+                buttons[1].OnInteract();
+                buttons[1].OnInteractEnded();
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+        buttons[1].OnInteract();
+        while (!screenText.text.Equals(""))
+        {
+            yield return true;
+            yield return new WaitForSeconds(0.01f);
+        }
+        buttons[1].OnInteractEnded();
+        while (!screenText.text.Equals("correct"))
+        {
+            yield return true;
+            yield return new WaitForSeconds(0.01f);
         }
     }
 }
